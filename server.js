@@ -3,6 +3,10 @@ const bodyParser = require("body-parser");
 const validUrl = require("valid-url");
 const path = require("path");
 const config = require("./config");
+
+const mongoose = require("./db");
+const URL = require("./models/Url");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -17,7 +21,14 @@ app.get("/new/*", (req, res) => {
     res.status(400).json({ error: "Invalid url" });
     return;
   }
-  res.json({ url });
+  let uri = new URL({ url });
+  uri.save().then(
+    doc => {
+      res.json(doc);
+    },
+    e => res.status(400).send(e)
+  );
+  //res.json({ url });
 });
 app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 
