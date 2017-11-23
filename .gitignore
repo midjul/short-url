@@ -1,5 +1,4 @@
 config/test.js
-config/prod.js
 config/dev.js
 
 node_modules/
