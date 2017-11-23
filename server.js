@@ -6,9 +6,10 @@ const config = require("./config");
 
 const mongoose = require("./db");
 const URL = require("./models/Url");
-
+process.env.PORT = 8080;
 const app = express();
-const PORT = config.port;
+const PORT = process.env.PORT || 3000;
+console.log("PORT NUMBER", PORT);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
