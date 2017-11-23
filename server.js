@@ -8,13 +8,27 @@ const mongoose = require("./db");
 const URL = require("./models/Url");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
+
+app.get("/:url", (req, res) => {
+  const url = req.params.url;
+  URL.findById(url).then(
+    doc => {
+      //res.json(doc);
+      res.redirect(doc.url);
+    },
+    err => {
+      res.status(400).json({ error: "Invalid url" });
+    }
+  );
+});
+
 app.get("/new/*", (req, res) => {
   const url = req.params[0];
   if (!validUrl.isWebUri(url)) {
@@ -24,12 +38,14 @@ app.get("/new/*", (req, res) => {
   let uri = new URL({ url });
   uri.save().then(
     doc => {
-      res.json(doc);
+      const short_url = req.protocol + "://" + req.get("host") + "/" + doc._id;
+      res.json({ orginal_url: doc.url, short_url });
     },
     e => res.status(400).send(e)
   );
   //res.json({ url });
 });
+
 app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 
 module.exports = app;
